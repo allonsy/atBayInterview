@@ -1,10 +1,11 @@
 from flask import Flask
 from pymongo import MongoClient
 import uuid
+import os
 
 app = Flask(__name__)
 
-connection_client = MongoClient("mongodb://mongo:password@localhost", 27017)
+connection_client = MongoClient("mongodb://mongo:password@localhost", int(os.environ['MONGO_PORT']))
 mongo_client = connection_client.at_bay_db.scans
 
 def format_one(v):

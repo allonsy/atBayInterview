@@ -2,17 +2,19 @@ from pymongo import MongoClient
 import uuid
 import time
 import random
+import os
 
 MIN_SLEEP = 1
 MAX_SLEEP = 10
-CHANCE_OF_FAILURE = 10
+CHANCE_OF_FAILURE = .10
 
-connection_client = MongoClient("mongodb://mongo:password@localhost", 27017)
+connection_client = MongoClient("mongodb://mongo:password@localhost", int(os.environ['MONGO_PORT']))
 mongo_client = connection_client.at_bay_db.scans
 
+# simulate a cyber scan, returns true on success (random based on CHANCE_OF_FAILURE)
 def wait():
   time.sleep(random.randrange(MIN_SLEEP, MAX_SLEEP + 1))
-  return random.randrange(0, CHANCE_OF_FAILURE) != 0
+  return random.random() > CHANCE_OF_FAILURE
 
 def perform_scan():
   result = mongo_client.find_one({"status": "Accepted"})

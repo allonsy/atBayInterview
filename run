@@ -1,0 +1,49 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+. pythonEnv/bin/activate
+
+MONGO_PORT=27017
+export MONGO_PORT=$MONGO_PORT
+
+INGEST_PORT=10550
+export INGEST_PORT=$INGEST_PORT
+
+STATUS_PORT=10551
+export STATUS_PORT=$STATUS_PORT
+
+function clean_up {
+  kill -9 "$INGEST_PID"
+  kill -9 "$PROCESS_PID"
+  kill -9 "$STATUS_PID"
+  docker kill "$MONGO_PID"
+}
+
+trap clean_up SIGHUP SIGINT SIGTERM
+
+echo "starting mongo..."
+MONGO_PID="$(mongo/run)"
+
+sleep 10
+
+echo "starting ingest..."
+cd ingest
+python -m flask run --port "$INGEST_PORT" &
+INGEST_PID=$!
+
+cd ..
+
+echo "starting process..."
+cd process
+python app.py &
+PROCESS_PID=$!
+
+cd ..
+
+echo "starting status..."
+cd status
+python -m flask run --port "$STATUS_PORT" &
+STATUS_PID=$!
+
+wait $STATUS_PID

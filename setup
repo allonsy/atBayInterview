@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+if [ -d "pythonEnv" ]; then
+  echo "python environment already setup... skipping"
+else
+  echo "installing python dependencies"
+  python -m venv pythonEnv
+fi
+
+. pythonEnv/bin/activate
+
+python -m pip install -r requirements.txt
+
+mongo/build
