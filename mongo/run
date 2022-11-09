@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+docker run --rm \
+	-e MONGO_INITDB_ROOT_USERNAME=mongo \
+	-e MONGO_INITDB_ROOT_PASSWORD=password \
+    -p 27017:27017 \
+    at_bay_ads_mongo
