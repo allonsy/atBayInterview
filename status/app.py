@@ -7,14 +7,6 @@ app = Flask(__name__)
 connection_client = MongoClient("mongodb://mongo:password@localhost", 27017)
 mongo_client = connection_client.at_bay_db.scans
 
-def get_mongo_client():
-  client = MongoClient("localhost", 27017)
-  return client.at_bay_db
-
-def insert_scan_request(uid):
-  scan_obj = { "_id": uid, "status": "Accepted" }
-  val = mongo_client.insert_one(scan_obj)
-
 def format_one(v):
   return "%s : %s" % (v['_id'], v['status'])
 
