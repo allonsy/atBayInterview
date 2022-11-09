@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $(dirname $)
+
+python -m flask run --port 10541
