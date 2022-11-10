@@ -7,7 +7,7 @@ You will need the following software
 * Unix system (mac or linux)
   * Sorry, although the python is cross platform, integration with windows and docker is not included in the runner scripts
 
-Run `./setup` from this directory to install dependencies (contained in [requirements.txt](requirements.txt))
+Run `./setup` from this directory to install dependencies (contained in [requirements.txt](requirements.txt)) along with mongo.
 
 ## Execution
 Run `./run` from this directory to run the program. It will start a fresh mongo instance within docker and then startup the ingest, process, and status programs accordingly
@@ -37,7 +37,11 @@ It then returns that value to the user (or 404 if the scan id doesn't exist).
 
 ### Scaling
 
-The Ingest and Status servers are very easily scaled here. For example, we can spin up as many instances of Ingest and Status as we want (assuming they are all on different ports) and the program will still function perfectly fine. The UUIDs are generated according to RFC4122 which ensures that they are unique without having to sync up the instances of the ingest service which allows this program to scale.
+The Ingest and Status servers are very easily scaled here. For example, we can spin up as many instances of Ingest and Status as we want (assuming they are all on different ports) and the program will still function perfectly fine.
+If you wish to try this, navigate to the `ingest` directory, run `. ../pythonEnv/bin/active` to enter the python environment sandbox, run `export MONGO_PORT=27017` (or whichever port mongo is on), and then run `python -m flask run --port $INGEST_PORT`, changing `$INGEST_PORT` to a fresh port. You can spin up as many of these as you wish and the process system will continue to pick up requests from any instance.
+The same can be done for the status component in the `status` directory.
+
+The UUIDs are generated according to RFC4122 which ensures that they are unique without having to sync up the instances of the ingest service which allows this program to scale.
 Since the UUIDs are unique, there isn't a chance of race conditions or need for synchronization between the servers.
 
 In Production, without the time and setup constraints of this assignment, I would recommend 2 options:
@@ -52,4 +56,4 @@ Both of these approaches have various pros and cons but both have the ability to
 
 In this case, mongo is a good fit for the problem. IDs are generated according to RFC 4122 which nearly guarantees unique IDs (within the human lifetime).
 Therefore, we don't need a database that has ACID guarantees like a SQL system. Instead, we want a database that scales well into a large cluster for maximum availability and read/write speeds.
-Mongo fits this quite nicely as it scales very well into clusters and has high availability with high read/write speeds so long as the edits are to the same document (given that the UUIDs are unique, this is a safe bet).
+Mongo fits this quite nicely as it scales very well into clusters and has high availability with high read/write speeds so long as the edits are not to the same document (given that the UUIDs are unique, this is a safe bet).
