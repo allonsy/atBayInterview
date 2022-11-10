@@ -13,10 +13,7 @@ def get_unique_id():
   uid = uuid.uuid1()
   return str(uid)
 
-def get_mongo_client():
-  client = MongoClient("localhost", 27017)
-  return client.at_bay_db
-
+# inserts a uid into the mongo db
 def insert_scan_request(uid):
   scan_obj = { "_id": uid, "status": "Accepted" }
   val = mongo_client.insert_one(scan_obj)
